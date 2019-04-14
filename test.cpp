@@ -1,58 +1,99 @@
+//program1 in c++ by Rishabh Rai(11704013)
+//K17PD
+
+
+/*Q>.  A uniprocessor system has n number of CPU intensive processes,
+ each process has its own requirement of CPU burst. The process with
+lowest CPU burst is given the highest priority. A late-arriving higher
+priority process can preempt a currently running process with lower priority.
+Simulate a scheduler that is scheduling the processes in such a way
+that higher priority process is never starved due to the execution
+ of lower priority process. What should be its average waiting
+time and average turnaround time if no two processes are arriving are
+ arriving at same time.
+
+*/
+
+#include<iostream>
 #include<stdio.h>
+using namespace std;
+void swap(int* a,int* b)
+{
+    int temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+
 
 int main()
 {
 	int n,i,j,k;
-	/*
-	at---arrival time
-	bt--burst time
-	ft---finish time
-	tat---turn around time
-	rm---remaining time
-	finished----to check if process is finished
-	*/
-	int at[20],bt[20],ft[20],pn[20],tat[20],wt[20],finished[20],rm[20],priority[20];
-	printf("Enter the number of processes: ");
-	scanf("%d",&n);
+	float waitingtime=0,tatime=0; //total waiting and turn around time
+	//declaring variables
+	int arrival_t[20],burst_t[20],finish_t[20],process_n[20],tat[20],waiting_t[20],
+	finished[20],remaining[20],priority[20];
+	cout<<"Enter the number of processes: ";
+	cin>>n;
 
 	//taking arrival time and burst time for n processes and initialing isFinished to false and remaining time to burst time
-	printf("Enter at, bt and priority of processes: \n");
+	cout<<"Enter Arrival, Burst Time  of processes: \n";
 	for(i=0;i<n;i++)
 	{
-		pn[i]=i+1;
-		scanf("%d %d %d",&at[i],&bt[i],&p[i]);
+		process_n[i]=i+1;
+		cin>>arrival_t[i]>>burst_t[i];
 		finished[i]=0;
-		rm[i]=bt[i];
+		remaining[i]=burst_t[i];
 
 	}
-	
-	
-	//sorting the processes on arrival time(ascending order)
-	
+     //calculating priority on basis of burst time
+     for( i=0;i<n;i++)
+	{
+		for(j=0;j<n-i-1;j++)
+		{
+			if(burst_t[j]>burst_t[j+1])
+			{
+				swap(&arrival_t[j],&arrival_t[j+1]);
+				swap(&burst_t[j],&burst_t[j+1]);
+				swap(&process_n[j],&process_n[j+1]);
+			}
+		}
+
+	}
+	for(i=0;i<n;i++)
+    {
+        priority[i]=i+1;   //assigning priority  based on burst time
+    }
+	//sorting the processes on ascending order of arrival time
+
 	for( i=0;i<n;i++)
 	{
 		for(j=0;j<n-i-1;j++)
 		{
-			if(at[j]>at[j+1])
+			if(arrival_t[j]>arrival_t[j+1])
 			{
-				swap(&at[j],&at[j+1]);
-				swap(&bt[j],&bt[j+1]);
-				swap(&pn[j],&pn[j+1]);
+				swap(&arrival_t[j],&arrival_t[j+1]);
+				swap(&burst_t[j],&burst_t[j+1]);
+				swap(&process_n[j],&process_n[j+1]);
+				swap(&priority[j],&priority[j+1]);
 			}
 		}
 
 	}
 
-	
-	
+
+
+
 	int total_time,all_fin=0;
 	int min;
 	int pos=0,flag=0;
 
-	 total_time=at[0];
+	 total_time=arrival_t[0];
 
 
-	//while all processes are not finished, find the process with lowest ie highest priority and process it.At each interval keep checking the upcoming processes for higher priority
+	//while all processes are not finished, find the process with
+	//lowest ie highest priority and process it.At each interval keep
+	// checking the upcoming processes for higher priority
 	//total_time----total time elapsed
 	while(!all_fin)
 	{
@@ -60,10 +101,11 @@ int main()
 		flag=0;
 		for(j=0;j<n;j++)
 		{
-		   //checking for process that has arrived but not yet finished (having highest priority at that time)
-		    if(at[j]<=total_time && finished[j]==0 && p[j]<min)
+		   //checking for process that has arrived but not yet
+		   // finished (having highest priority at that time)
+		    if(arrival_t[j]<=total_time && finished[j]==0 && priority[j]<min)
 		    {
-		        min=p[i];
+		        min=priority[j];
 		        pos=j;
 		        flag=1;
 		    }
@@ -75,7 +117,7 @@ int main()
 		    {
                  if(finished[i]==0)
                 {
-                    total_time=at[i];
+                    total_time=arrival_t[i];
                     break;
                 }
 		    }
@@ -84,13 +126,13 @@ int main()
 		else
 		{
 			total_time++;
-			rm[pos]--;
+			remaining[pos]--;
 
-			if(rm[pos]==0)
+			if(remaining[pos]==0)
 			{
 
 				finished[pos]=1;
-				ft[pos]=total_time;
+				finish_t[pos]=total_time;
 			}
 		}
 		all_fin=1;
@@ -106,28 +148,26 @@ int main()
 
 	}
 	printf("\n");
-	
-	//total_wt---total waiting time
-	//total_tat--total turn around time
 
-	float total_wt=0,total_tat=0;
-	
-	//calculating total turn around time, waiting time, totat waiting time and total turn around time using basic formule
+	//calculating total turn around time, waiting time,
+	// totat waiting time and total turn around time using basic formule
 	for(i=0;i<n;i++)
 	{
-		tat[i]=ft[i]-at[i];
-		wt[i]=tat[i]-bt[i];
-		total_wt+=wt[i];
-		total_tat+=tat[i];
+		tat[i]=finish_t[i]-arrival_t[i];
+		waiting_t[i]=tat[i]-burst_t[i];
+		waitingtime+=waiting_t[i];
+		tatime+=tat[i];
 	}
-	
 
-	//printing arrival time, burst time, finish time, turn around time and waiting time for all processes in tabular form
-	printf("Process \t AT \t BT \t p \t FT \t TAT \t WT\n");
+
+	//printing result
+	cout<<"Process \t AT \t BT \t P \t FT \t TAT \t WT\n";
 	for(i=0;i<n;i++)
-		printf("P%d \t\t %d \t %d \t %d \t\t %d \t %d \t %d\n",pn[i],at[i],bt[i],p[i],ft[i],tat[i],wt[i]);
+		cout<<"P"<<process_n[i]<<" \t\t "<<arrival_t[i]<<" \t "<<burst_t[i]
+		<<" \t "<<priority[i]<<" \t "<<finish_t[i]<<" \t "<<tat[i]<<" \t "
+		<<waiting_t[i]<<"\n";
 
-	//calculating average turn around time and average waiting time
-	printf("\nAverage TAT: %f\n",total_tat/n);
-	printf("Average WT: %f\n",total_wt/n);
+	//printing avg turnaround time and avg waiting time
+	cout<<"\nAverage TAT: "<<tatime<<endl;
+	cout<<"Average WT: "<<waitingtime/n;
 }
