@@ -32,37 +32,33 @@ int main() {
 	printf("Main thread beginning\n");
    
    int runTime,clients,i;
-   //if (argc != 5){
-	   printf("Please enter HairCut  time:");
-	   
-	  // exit(0);
-   //}
-   scanf("%d",&runTime);
-   printf("\nNumber of clients: ");
-   scanf("%d",&clients);
+   printf("Please enter HairCut  time:");
+   scanf("%d",&runTime);                  //getting values from user
+   printf("\nNumber of clients: ");  
+   scanf("%d",&clients);          //no of clients
    printf("\nNumber of chairs: ");
-   scanf("%d",&num_chairs);
+   scanf("%d",&num_chairs);      //no of chairs in shop
   // printf("\nClient wait time: ");
   // scanf("%d",&clientWait);
    // Initialize semaphores 
    sem_init(&chairs_mutex,0,1);
    sem_init(&sem_client,0,0);
    sem_init(&sem_barber,0,0);
-   //3. Create barber thread. 
+   // Creating barber thread. 
    pthread_create(&barbert, NULL, barber, NULL);
    printf("Creating barber thread with id %lu\n",barbert);
-   // 4. Create client threads. 
+   // Creating clients threads. 
    for (i = 0; i < clients; i++){
-	   pthread_create(&clientids[i], NULL, client, NULL);
+	   pthread_create(&clientids[i], NULL, client, NULL);  //creating thread for multiple clients
 	   printf("Creating client thread with id %lu\n",clientids[i]);
    }
-   // 5. Sleep.
+   // Initially barber is sleeping
    printf("Barber is sleeping\n"); 
-  // printf("main thread sleeping for %d seconds\n", runTime);
+  //
    sleep(clients);
-   // 6. Exit.  
+   // after cutting hair barber is sleeping again
    printf("Barber Sleeping again\n");
-   exit(0);
+   exit(1);
 }
 
 void *barber() {
