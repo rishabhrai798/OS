@@ -65,15 +65,15 @@ void *barber() {
    int worktime;
   
    while(1) {
-      // waiting for a client(sem_client) 
+      // waiting for a client sem_client 
 	  sem_wait(&sem_client);
-      // waiting for mutex to access chair count (chair_mutex) 
+      // waiting for mutex to access chair count chair_mutex
 	  sem_wait(&chairs_mutex);
       // increment number of chairs available 
 	  num_chairs += 1;
 	  printf("Client awakes Barber\nBarber is awake now\n");
 	  printf("Barber: Taking a client. Number of chairs available = %d\n",num_chairs);
-      // signal to client that barber is ready to cut their hair (sem_barber) 
+      // signal to client that barber is ready to cut hair sem_barber 
 	  sem_post(&sem_barber);
       // give up lock on chair count 
 	  sem_post(&chairs_mutex);
@@ -111,7 +111,7 @@ void *client() {
 		   sem_post(&chairs_mutex);
            // free mutex lock on chair count 
 		   sem_post(&sem_client);
-           // wait for barber (sem_barber) 
+           // wait for barber sem_barber 
 		   sem_wait(&sem_barber);
            // get haircut 
 		   printf("Client: Thread %u getting a haircut\n",(unsigned int)pthread_self());
