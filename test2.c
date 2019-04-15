@@ -5,15 +5,17 @@ then the customer leaves the shop. If the barber is busy but chairs are availabl
 then the customer sits in one of the free chairs. If the barber is asleep, the
 customer wakes up the barber. Write a program to coordinate the barber and the customers.*/
 
-//Code By Rishabh Rai
+//Code By Rishabh Rai(11704013)  K17PD
+
 //Lovely Professional University
+
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <stdlib.h>    //standard library
 #include <pthread.h>
-#include <semaphore.h>
-#include <limits.h>
-#define max_client 20
+#include <semaphore.h>  //including header file for semaphore
+#include <limits.h>    //for max limits of variables
+#define max_client 20   //defines maximum number of clients
 
 void *client();  //declaring fuction for client thread
 void *barber();   //declaring function for barber thread
@@ -67,21 +69,21 @@ void *barber() {
    int worktime;
   
    while(1) {
-      /* wait for a client to become available (sem_client) */
+      // waiting for a client(sem_client) 
 	  sem_wait(&sem_client);
-      /* wait for mutex to access chair count (chair_mutex) */
+      // waiting for mutex to access chair count (chair_mutex) 
 	  sem_wait(&chairs_mutex);
-      /* increment number of chairs available */
+      // increment number of chairs available 
 	  num_chairs += 1;
 	  printf("Client awakes Barber\nBarber is awake now\n");
 	  printf("Barber: Taking a client. Number of chairs available = %d\n",num_chairs);
-      /* signal to client that barber is ready to cut their hair (sem_barber) */
+      // signal to client that barber is ready to cut their hair (sem_barber) 
 	  sem_post(&sem_barber);
-      /* give up lock on chair count */
+      // give up lock on chair count 
 	  sem_post(&chairs_mutex);
-      /* generate random number, worktime, from 1-4 seconds for length of haircut.  */
+      // generate random number, worktime, from 1-4 seconds for length of haircut. 
 	  worktime = (rand() % 4) + 1;
-      /* cut hair for worktime seconds (really just call sleep()) */
+      // cut hair for worktime seconds (really just call sleep()) 
 	  printf("Barber: Cutting hair for %d seconds\n", worktime);
 	  sleep(worktime);
     } 
@@ -91,25 +93,25 @@ void *client() {
    int waittime;
 
    while(1) {
-      /* wait for mutex to access chair count (chair_mutex) */
+      // locking semwait on chair
 	  sem_wait(&chairs_mutex);
-      /* if there are no chairs */
+      // if there are no chairs then
 	  if(num_chairs <= 0){
-           /* free mutex lock on chair count */
+           // unlocking mutext lock on chair
 		   printf("Client: Thread %u leaving with no haircut\n", (unsigned int)pthread_self());
 		   //pthread_exit(NULL);
 		   sem_post(&chairs_mutex);
 		   pthread_exit(NULL);
 	  }
-      /* else if there are chairs */
+      //else if there are chairs 
 	  else{
-           /* decrement number of chairs available */
+           // decreasing number of chairs in barber shop
 		  
 		   num_chairs -= 1;
 			
  		   // pthread_exit(NULL);
 		   printf("Client: Thread %u Sitting to wait. Number of chairs left = %d\n",(unsigned int)pthread_self(),num_chairs);
-           /* signal that a customer is ready (sem_client) */
+           // signal that a customer is ready 
 		   sem_post(&chairs_mutex);
            // free mutex lock on chair count 
 		   sem_post(&sem_client);
@@ -119,10 +121,9 @@ void *client() {
 		   printf("Client: Thread %u getting a haircut\n",(unsigned int)pthread_self());
  		
 	  }
-      // generate random number, waittime, for length of wait until next haircut or next try.  Max value from command line. 
+      // random waiting time for next haircut
 	  waittime = (rand() % 1) + 1;
-      /* sleep for waittime seconds */
-	  //printf("Client: Thread %u waiting %d seconds before attempting next haircut\n",(unsigned int)pthread_self(),waittime);
+      // sleep for waittime seconds 
 	  sleep(waittime);
      }
 }
